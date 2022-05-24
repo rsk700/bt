@@ -74,7 +74,7 @@ const Tokenizer = struct {
         if (self.cursor == self.data.len) {
             return Token{ .End = .{ .a = self.data.len, .b = self.data.len, .data = &.{} } };
         }
-        if (self.cursor <= (self.data.len - 3)) {
+        if ((self.cursor + 3) <= self.data.len) {
             const data_section = self.data[self.cursor .. self.cursor + 3];
             if (std.mem.eql(u8, data_section, "{--")) {
                 defer self.cursor += 3;
@@ -92,10 +92,8 @@ const Tokenizer = struct {
         while (true) {
             if ((self.cursor + n) == self.data.len) {
                 break;
-            } else {
-                if (isSpecial(self.data[self.cursor + n])) {
-                    break;
-                }
+            } else if (isSpecial(self.data[self.cursor + n])) {
+                break;
             }
             n += 1;
         }
@@ -294,9 +292,34 @@ test "gen" {
     const expect = std.testing.expect;
     const a = std.testing.allocator;
     {
+        const data = gen(a, "", .{}) catch unreachable;
+        defer a.free(data);
+        try expect(std.mem.eql(u8, data, ""));
+    }
+    {
+        const data = gen(a, "a", .{}) catch unreachable;
+        defer a.free(data);
+        try expect(std.mem.eql(u8, data, "a"));
+    }
+    {
         const data = gen(a, "aaa", .{}) catch unreachable;
         defer a.free(data);
         try expect(std.mem.eql(u8, data, "aaa"));
+    }
+    {
+        const data = gen(a, "aaa", .{}) catch unreachable;
+        defer a.free(data);
+        try expect(std.mem.eql(u8, data, "aaa"));
+    }
+    {
+        const data = gen(a, "{ }", .{}) catch unreachable;
+        defer a.free(data);
+        try expect(std.mem.eql(u8, data, "{ }"));
+    }
+    {
+        const data = gen(a, "--}", .{}) catch unreachable;
+        defer a.free(data);
+        try expect(std.mem.eql(u8, data, "--}"));
     }
     {
         const data = gen(a, "aaa {--value1--}", .{ .value1 = "123" }) catch unreachable;

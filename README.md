@@ -25,7 +25,7 @@ const text = bt.genComptime("aaa {--value1--} {--value2--} {--value1--}", .{.val
 // text is: "aaa 111 222 111"
 ```
 
-escaping "{--":
+escaping `{--`:
 ```
 const bt = @import("bt");
 

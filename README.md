@@ -32,3 +32,5 @@ const bt = @import("bt");
 const text = bt.genComptime("{--\"{--\"--}", .{});
 // text is: "{--"
 ```
+
+Bt uses a lot of backward branches at compile-time you may need to increase it with `@setEvalBranchQuota`.

@@ -264,7 +264,7 @@ fn parseLiteral(comptime tok: *Tokenizer) Element {
 test "parse" {
     const expect = std.testing.expect;
     {
-        const elements = parse("aaa {--value1--}");
+        const elements = comptime parse("aaa {--value1--}");
         try expect(elements.len == 2);
     }
 }
@@ -360,23 +360,23 @@ pub fn genComptime(comptime template: []const u8, comptime args: anytype) []cons
 test "genComptime" {
     const expect = std.testing.expect;
     {
-        const data = genComptime("aaa", .{});
+        const data = comptime genComptime("aaa", .{});
         try expect(std.mem.eql(u8, data, "aaa"));
     }
     {
-        const data = genComptime("aaa {--value1--}", .{ .value1 = "123" });
+        const data = comptime genComptime("aaa {--value1--}", .{ .value1 = "123" });
         try expect(std.mem.eql(u8, data, "aaa 123"));
     }
     {
-        const data = genComptime("aaa {--value1--} {-- value1 --}", .{ .value1 = "123" });
+        const data = comptime genComptime("aaa {--value1--} {-- value1 --}", .{ .value1 = "123" });
         try expect(std.mem.eql(u8, data, "aaa 123 123"));
     }
     {
-        const data = genComptime("{--\"{--\"--}", .{});
+        const data = comptime genComptime("{--\"{--\"--}", .{});
         try expect(std.mem.eql(u8, data, "{--"));
     }
     {
-        const data = genComptime("aaa {--v1--} {--v2--} {--v1--}", .{ .v1 = "111", .v2 = "222" });
+        const data = comptime genComptime("aaa {--v1--} {--v2--} {--v1--}", .{ .v1 = "111", .v2 = "222" });
         try expect(std.mem.eql(u8, data, "aaa 111 222 111"));
     }
 }
